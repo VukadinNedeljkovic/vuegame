@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>title</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			<div class="container">
+				<template v-if="!choosed">
+					<h3>Choose <span v-if="!userPlayer">Player</span><span v-else>Enemy</span>:</h3>
+					<div v-for="player in players" v-if="!player.choosed">
+						<button @click="choosePlayer(player)">
+							{{player.name}}
+						</button>
+						<a href="javascript:;" @click="player.showInfo = !player.showInfo">info <span v-if="player.showInfo">&#8593;</span><span v-else>&#8595;</span></a>
+						<ul class="list-group" v-if="player.showInfo">
+							<li class="list-group-item" v-for="(value, key) in player"><mark>{{key}}:</mark> {{value}}</li>
+						</ul>
+					</div>
+				</template>
+				<div v-else class="text-center mt-5">
+					<div class="row">
+						<div class="col-5">
+							<div style="background-color: green; height: 3px;" :style="{width: userPlayer.health + '%' }"></div>
+							<h2>{{userPlayer.name}}</h2>
+							<button>Hit Enemy</button>
+							<button v-if="userPlayer.energy >= userPlayer.specialCost">{{userPlayer.specialName}}</button>
+							<button>Heal</button>
+						</div>
+						<div class="col-2"><h2>vs</h2></div>
+						<div class="col-5">
+							<div style="background-color: green; height: 3px;" :style="{width: robotPlayer.health + '%' }"></div>
+							<h2>{{robotPlayer.name}}</h2>
+						</div>
+					</div>
+					<h3 class="mt-5">Log:</h3>
+					<ul class="list-group">
+						<li class="list-group-item" v-for="value in fightLog">{{value}}</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="app.js"></script>
+</html>
