@@ -16,30 +16,62 @@
 							{{player.name}}
 						</button>
 						<a href="javascript:;" @click="player.showInfo = !player.showInfo">info <span v-if="player.showInfo">&#8593;</span><span v-else>&#8595;</span></a>
-						<ul class="list-group" v-if="player.showInfo">
-							<li class="list-group-item" v-for="(value, key) in player"><mark>{{key}}:</mark> {{value}}</li>
+						<ul v-if="player.showInfo">
+							<li v-for="(value, key) in player"><mark>{{key}}:</mark> {{value}}</li>
 						</ul>
 					</div>
 				</template>
 				<div v-else class="text-center mt-5">
 					<div class="row">
-						<div class="col-5">
-							<div style="background-color: green; height: 3px;" :style="{width: userPlayer.health + '%' }"></div>
+						<div class="col-5 d-flex flex-column">
 							<h2>{{userPlayer.name}}</h2>
-							<button>Hit Enemy</button>
-							<button v-if="userPlayer.energy >= userPlayer.specialCost">{{userPlayer.specialName}}</button>
-							<button>Heal</button>
+							<div class="d-flex flex-column align-items-center justify-content-between" style="flex-grow: 2;">
+								<div class="progress" style="width: 100%;">
+									<div class="progress-bar bg-success" role="progressbar" :style="{width: userPlayer.health/userPlayer.healthInit*100+'%'}" :aria-valuenow="userPlayer.health" aria-valuemin="0" :aria-valuemax="userPlayer.healthInit">{{userPlayer.health}}</div>
+								</div>
+								<template v-if="!fightEnds">
+									<button class="btn btn-danger my-3" @click="attack(userPlayer,robotPlayer)">Hit Enemy</button>
+									<button class="btn btn-info my-3" @click="heal(userPlayer)" :disabled="userPlayer.energy < userPlayer.healCost">
+										Heal:
+										<small>{{userPlayer.healCost}} energy</small>
+									</button>
+									<button class="btn btn-primary my-3" @click="attack(userPlayer,robotPlayer, true)" :disabled="userPlayer.energy < userPlayer.specialCost">
+										{{userPlayer.specialName}}:
+										<small>{{userPlayer.specialCost}} energy</small>
+									</button>
+									<div style="width: 100%;">
+										<h5>Energy: {{userPlayer.energy}}</h5>
+										<div class="progress">
+											<div class="progress-bar bg-info" role="progressbar" :style="{width: userPlayer.energy/userPlayer.maxEnergy*100 + '%' }" :aria-valuenow="userPlayer.energy" aria-valuemin="0" :aria-valuemax="userPlayer.maxEnergy"></div>
+										</div>
+									</div>
+								</template>
+							</div>
 						</div>
-						<div class="col-2"><h2>vs</h2></div>
-						<div class="col-5">
-							<div style="background-color: green; height: 3px;" :style="{width: robotPlayer.health + '%' }"></div>
+						<div class="col-2 d-flex flex-column align-items-center justify-content-between"><h2>vs</h2></div>
+						<div class="col-5 d-flex flex-column">
 							<h2>{{robotPlayer.name}}</h2>
+							<div class="d-flex flex-column align-items-center justify-content-between" style="flex-grow: 2;">
+								<div class="progress" style="width: 100%;">
+									<div class="progress-bar bg-success" role="progressbar" :style="{width: robotPlayer.health/robotPlayer.healthInit*100+'%'}" :aria-valuenow="robotPlayer.health" aria-valuemin="0" :aria-valuemax="robotPlayer.healthInit">{{robotPlayer.health}}</div>
+								</div>
+								<div v-if="!fightEnds" style="width: 100%;">
+									<h5>Energy: {{robotPlayer.energy}}</h5>
+									<div class="progress">
+										<div class="progress-bar bg-info" role="progressbar" :style="{width: robotPlayer.energy/robotPlayer.maxEnergy*100 + '%' }" :aria-valuenow="robotPlayer.energy" aria-valuemin="0" :aria-valuemax="robotPlayer.maxEnergy"></div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
-					<h3 class="mt-5">Log:</h3>
-					<ul class="list-group">
-						<li class="list-group-item" v-for="value in fightLog">{{value}}</li>
-					</ul>
+					<div class="row">
+						<div class="col-4 offset-4">
+							<h3 class="mt-5">Log:</h3>
+							<ul class="log list-group" style="max-height: 300px; overflow: auto; display: block;">
+								<li class="list-group-item" v-for="value in fightLog">{{value}}</li>
+							</ul>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
